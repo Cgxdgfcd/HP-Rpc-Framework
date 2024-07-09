@@ -20,7 +20,7 @@
     <dependencies>
         <dependency>
             <groupId>com.cgxdgfcd</groupId>
-            <artifactId>rpc-framework</artifactId>
+            <artifactId>rpc-framework-core</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>

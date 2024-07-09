@@ -2,6 +2,8 @@ package com.cgxdgfcd.example.consumer;
 
 import com.cgxdgfcd.example.common.model.User;
 import com.cgxdgfcd.example.common.service.UserService;
+import com.cgxdgfcd.rpc.RpcApplication;
+import com.cgxdgfcd.rpc.config.RpcConfig;
 import com.cgxdgfcd.rpc.proxy.ServiceProxyFactory;
 
 /**
