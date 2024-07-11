@@ -81,7 +81,7 @@ public class SpiLoader {
         Class<?> implClass = keyClassMap.get(key);
         // 从实例缓存中加载指定类型的实例
         String implClassName = implClass.getName();
-        if (!instanceCache.containsKey(implClass)) {
+        if (!instanceCache.containsKey(implClassName)) {
             try {
                 instanceCache.put(implClassName, implClass.newInstance());
             } catch (InstantiationException | IllegalAccessException e) {

@@ -1,0 +1,1 @@
+etcd=com.cgxdgfcd.rpc.registry.EtcdRegistry
