@@ -56,4 +56,11 @@ public interface Registry {
      * @param serviceNodeKey
      */
     void watch(String serviceNodeKey);
+
+    /**
+     * 清理指定 serviceKey 的缓存
+     *
+     * @param serviceKey
+     */
+    void removeCache(String serviceKey);
 }

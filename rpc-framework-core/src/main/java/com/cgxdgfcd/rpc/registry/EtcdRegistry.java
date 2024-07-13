@@ -36,7 +36,7 @@ public class EtcdRegistry implements Registry {
     private final Set<String> localRegisterNodeKeySet = new HashSet<>();
 
     /**
-     * 注册中心本地缓存
+     * 注册中心本地缓存（消费端）
      */
     private final RegisterServiceCache registerServiceCache = new RegisterServiceCache();
 
@@ -194,7 +194,7 @@ public class EtcdRegistry implements Registry {
                         case DELETE:
                             // 清理注册服务缓存
                             String serviceKey = serviceNodeKey.split(ETCD_ROOT_PATH)[1].split("/")[0];
-                            registerServiceCache.removeCache(serviceKey);
+                            removeCache(serviceKey);
                             break;
                         case PUT:
                         default:
@@ -203,5 +203,15 @@ public class EtcdRegistry implements Registry {
                 }
             });
         }
+    }
+
+    /**
+     * 清理指定 serviceKey 的缓存
+     *
+     * @param serviceKey
+     */
+    @Override
+    public void removeCache(String serviceKey) {
+        registerServiceCache.removeCache(serviceKey);
     }
 }

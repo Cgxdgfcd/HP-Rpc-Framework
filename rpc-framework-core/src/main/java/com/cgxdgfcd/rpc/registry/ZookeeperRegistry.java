@@ -140,12 +140,17 @@ public class ZookeeperRegistry implements Registry {
             curatorCache.start();
             curatorCache.listenable().addListener(CuratorCacheListener.builder().forDeletes(childData -> {
                 String serviceKey = serviceNodeKey.split(ZK_ROOT_PATH)[1].split("/")[0];
-                registerServiceCache.removeCache(serviceKey);
+                removeCache(serviceKey);
             }).forChanges((oldNode, node) -> {
                 String serviceKey = serviceNodeKey.split(ZK_ROOT_PATH)[1].split("/")[0];
-                registerServiceCache.removeCache(serviceKey);
+                removeCache(serviceKey);
             }).build());
         }
+    }
+
+    @Override
+    public void removeCache(String serviceKey) {
+        registerServiceCache.removeCache(serviceKey);
     }
 
     private ServiceInstance<ServiceMetaInfo> buildServiceInstance(ServiceMetaInfo serviceMetaInfo) {

@@ -1,5 +1,6 @@
 package com.cgxdgfcd.example.provider;
 
+import cn.hutool.core.date.DateTime;
 import com.cgxdgfcd.example.common.service.UserService;
 import com.cgxdgfcd.rpc.RpcApplication;
 import com.cgxdgfcd.rpc.config.RegistryConfig;
@@ -25,6 +26,7 @@ public class ProviderExample {
         serviceMetaInfo.setServiceName(serviceName);
         serviceMetaInfo.setServiceHost(rpcConfig.getServerHost());
         serviceMetaInfo.setServicePort(rpcConfig.getServerPort());
+        serviceMetaInfo.setRegisterTime(DateTime.now());
         try {
             registry.register(serviceMetaInfo);
         } catch (Exception e) {

@@ -1,5 +1,6 @@
 package com.cgxdgfcd.rpc.model;
 
+import cn.hutool.core.date.DateTime;
 import cn.hutool.core.util.StrUtil;
 import lombok.Data;
 
@@ -33,6 +34,11 @@ public class ServiceMetaInfo {
      * 服务分组（暂未实现）
      */
     private String serviceGroup = "default";
+
+    /**
+     * 服务注册时间
+     */
+    private DateTime registerTime;
 
     /**
      * 获取服务键名

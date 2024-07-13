@@ -1,6 +1,7 @@
 package com.cgxdgfcd.rpc.proxy;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.io.IORuntimeException;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
 import com.cgxdgfcd.rpc.RpcApplication;
@@ -26,7 +27,7 @@ import java.util.List;
 public class ServiceProxy implements InvocationHandler {
 
     @Override
-    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+    public Object invoke(Object proxy, Method method, Object[] args) {
         // 指定序列化器
         final Serializer serializer = SerializerFactory.getInstance(RpcApplication.getRpcConfig().getSerializer());
 
@@ -39,12 +40,32 @@ public class ServiceProxy implements InvocationHandler {
                 .args(args)
                 .build();
 
-        // 从注册中心获取服务提供者请求地址
+        // 构造服务信息
         RpcConfig rpcConfig = RpcApplication.getRpcConfig();
         Registry registry = RegistryFactory.getInstance(rpcConfig.getRegistryConfig().getRegistry());
         ServiceMetaInfo serviceMetaInfo = new ServiceMetaInfo();
-        serviceMetaInfo.setServiceName(serviceName);
+        serviceMetaInfo.setServiceName(rpcRequest.getServiceName());
         serviceMetaInfo.setServiceVersion(RpcConstant.DEFAULT_SERVICE_VERSION);
+
+        try {
+            return invokeHandle(rpcRequest, registry, serviceMetaInfo, serializer);
+        } catch (IORuntimeException e) {
+            // 服务注册信息失效时，强制从服务中心拉取信息更新本地缓存（清理本地缓存即可）
+            registry.removeCache(serviceMetaInfo.getServiceKey());
+            return invokeHandle(rpcRequest, registry, serviceMetaInfo, serializer);
+        }
+    }
+
+    /**
+     * 执行发送请求操作
+     *
+     * @param rpcRequest
+     * @param registry
+     * @param serializer
+     * @return
+     */
+    private Object invokeHandle(RpcRequest rpcRequest, Registry registry, ServiceMetaInfo serviceMetaInfo, Serializer serializer) {
+        // 从注册中心获取服务提供者请求地址
         List<ServiceMetaInfo> serviceMetaInfos = registry.serviceDiscovery(serviceMetaInfo.getServiceKey());
         if (CollUtil.isEmpty(serviceMetaInfos)) {
             throw new RuntimeException("暂无服务地址");
@@ -67,7 +88,6 @@ public class ServiceProxy implements InvocationHandler {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
         return null;
     }
 }
