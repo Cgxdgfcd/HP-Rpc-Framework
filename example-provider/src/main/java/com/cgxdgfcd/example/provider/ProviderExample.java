@@ -11,6 +11,7 @@ import com.cgxdgfcd.rpc.registry.Registry;
 import com.cgxdgfcd.rpc.registry.RegistryFactory;
 import com.cgxdgfcd.rpc.server.HttpServer;
 import com.cgxdgfcd.rpc.server.VertxHttpServer;
+import com.cgxdgfcd.rpc.server.tcp.VertxTcpServer;
 
 public class ProviderExample {
     public static void main(String[] args) {
@@ -33,7 +34,7 @@ public class ProviderExample {
             throw new RuntimeException(e);
         }
 
-        HttpServer httpServer = new VertxHttpServer();
-        httpServer.doStart(rpcConfig.getServerPort());
+        VertxTcpServer server = new VertxTcpServer();
+        server.doStart(rpcConfig.getServerPort());
     }
 }
