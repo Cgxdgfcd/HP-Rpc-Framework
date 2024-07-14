@@ -10,6 +10,7 @@ import com.cgxdgfcd.rpc.config.RpcConfig;
 import com.cgxdgfcd.rpc.constant.RpcConstant;
 import com.cgxdgfcd.rpc.fault.retry.FixedIntervalRetryStrategy;
 import com.cgxdgfcd.rpc.fault.retry.RetryStrategy;
+import com.cgxdgfcd.rpc.fault.retry.RetryStrategyFactory;
 import com.cgxdgfcd.rpc.loadbalancer.LoadBalancer;
 import com.cgxdgfcd.rpc.loadbalancer.LoadBalancerFactory;
 import com.cgxdgfcd.rpc.model.RpcRequest;
@@ -77,7 +78,7 @@ public class ServiceProxy implements InvocationHandler {
 //            System.out.println(selectedServiceMetaInfo.getServiceAddress());
 
             // 使用重试机制
-            RetryStrategy retryStrategy = new FixedIntervalRetryStrategy();
+            RetryStrategy retryStrategy = RetryStrategyFactory.getInstance(RpcApplication.getRpcConfig().getRetryStrategy());
             RpcResponse rpcResponse = retryStrategy.doRetry(() ->
                     VertxTcpClient.doRequest(rpcRequest, selectedServiceMetaInfo)
             );
