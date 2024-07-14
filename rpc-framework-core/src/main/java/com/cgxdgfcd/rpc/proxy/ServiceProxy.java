@@ -8,6 +8,8 @@ import cn.hutool.http.HttpResponse;
 import com.cgxdgfcd.rpc.RpcApplication;
 import com.cgxdgfcd.rpc.config.RpcConfig;
 import com.cgxdgfcd.rpc.constant.RpcConstant;
+import com.cgxdgfcd.rpc.fault.retry.FixedIntervalRetryStrategy;
+import com.cgxdgfcd.rpc.fault.retry.RetryStrategy;
 import com.cgxdgfcd.rpc.loadbalancer.LoadBalancer;
 import com.cgxdgfcd.rpc.loadbalancer.LoadBalancerFactory;
 import com.cgxdgfcd.rpc.model.RpcRequest;
@@ -34,6 +36,7 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -71,13 +74,16 @@ public class ServiceProxy implements InvocationHandler {
             Map<String, Object> requestParams = new HashMap<>();
             requestParams.put("methodName", rpcRequest.getMethodName());
             ServiceMetaInfo selectedServiceMetaInfo = loadBalancer.select(requestParams, serviceMetaInfos);
-            System.out.println(selectedServiceMetaInfo.getServiceAddress());
+//            System.out.println(selectedServiceMetaInfo.getServiceAddress());
 
-            // 发送 tcp 请求
-            RpcResponse rpcResponse = VertxTcpClient.doRequest(rpcRequest, selectedServiceMetaInfo);
+            // 使用重试机制
+            RetryStrategy retryStrategy = new FixedIntervalRetryStrategy();
+            RpcResponse rpcResponse = retryStrategy.doRetry(() ->
+                    VertxTcpClient.doRequest(rpcRequest, selectedServiceMetaInfo)
+            );
             return rpcResponse.getData();
-        } catch (ExecutionException | InterruptedException e) {
-            throw new RuntimeException(e);
+        } catch (Exception e) {
+            throw new RuntimeException("调用失败, " + e);
         }
 
 

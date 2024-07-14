@@ -1,0 +1,3 @@
+no=com.cgxdgfcd.rpc.fault.retry.NoRetryStrategy
+fixedInterval=com.cgxdgfcd.rpc.fault.retry.FixedIntervalRetryStrategy
+exponentialInterval=com.cgxdgfcd.rpc.fault.retry.ExponentialIntervalRetryStrategy

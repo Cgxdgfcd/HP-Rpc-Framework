@@ -1,5 +1,6 @@
 package com.cgxdgfcd.rpc.config;
 
+import com.cgxdgfcd.rpc.fault.retry.RetryStrategyKeys;
 import com.cgxdgfcd.rpc.loadbalancer.LoadBalancer;
 import com.cgxdgfcd.rpc.loadbalancer.LoadBalancerKeys;
 import com.cgxdgfcd.rpc.loadbalancer.RoundRobinLoadBalancer;
@@ -52,4 +53,9 @@ public class RpcConfig {
      * 负载均衡器
      */
     private String loadBalancer = LoadBalancerKeys.ROUND_ROBIN;
+
+    /**
+     * 重试策略
+     */
+    private String retryStrategy = RetryStrategyKeys.NO;
 }
