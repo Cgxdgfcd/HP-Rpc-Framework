@@ -1,40 +1,20 @@
 package com.cgxdgfcd.example.provider;
 
-import cn.hutool.core.date.DateTime;
 import com.cgxdgfcd.example.common.service.UserService;
-import com.cgxdgfcd.rpc.RpcApplication;
-import com.cgxdgfcd.rpc.config.RegistryConfig;
-import com.cgxdgfcd.rpc.config.RpcConfig;
-import com.cgxdgfcd.rpc.model.ServiceMetaInfo;
-import com.cgxdgfcd.rpc.registry.LocalRegistry;
-import com.cgxdgfcd.rpc.registry.Registry;
-import com.cgxdgfcd.rpc.registry.RegistryFactory;
-import com.cgxdgfcd.rpc.server.HttpServer;
-import com.cgxdgfcd.rpc.server.VertxHttpServer;
-import com.cgxdgfcd.rpc.server.tcp.VertxTcpServer;
+import com.cgxdgfcd.rpc.bootstrap.ProviderBootstrap;
+import com.cgxdgfcd.rpc.model.ServiceRegisterInfo;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ProviderExample {
     public static void main(String[] args) {
-        // 注册服务
-        String serviceName = UserService.class.getName();
-        LocalRegistry.register(serviceName, UserServiceImpl.class);
+        // 要注册的服务
+        List<ServiceRegisterInfo> serviceRegisterInfoList = new ArrayList<>();
+        ServiceRegisterInfo serviceRegisterInfo = new ServiceRegisterInfo(UserService.class.getName(), UserServiceImpl.class);
+        serviceRegisterInfoList.add(serviceRegisterInfo);
 
-        // 注册服务到注册中心
-        RpcConfig rpcConfig = RpcApplication.getRpcConfig();
-        RegistryConfig registryConfig = rpcConfig.getRegistryConfig();
-        Registry registry = RegistryFactory.getInstance(registryConfig.getRegistry());
-        ServiceMetaInfo serviceMetaInfo = new ServiceMetaInfo();
-        serviceMetaInfo.setServiceName(serviceName);
-        serviceMetaInfo.setServiceHost(rpcConfig.getServerHost());
-        serviceMetaInfo.setServicePort(rpcConfig.getServerPort());
-        serviceMetaInfo.setRegisterTime(DateTime.now());
-        try {
-            registry.register(serviceMetaInfo);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
-        VertxTcpServer server = new VertxTcpServer();
-        server.doStart(rpcConfig.getServerPort());
+        // 服务提供者初始化
+        ProviderBootstrap.init(serviceRegisterInfoList);
     }
 }
