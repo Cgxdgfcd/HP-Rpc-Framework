@@ -11,6 +11,8 @@ import com.cgxdgfcd.rpc.constant.RpcConstant;
 import com.cgxdgfcd.rpc.fault.retry.FixedIntervalRetryStrategy;
 import com.cgxdgfcd.rpc.fault.retry.RetryStrategy;
 import com.cgxdgfcd.rpc.fault.retry.RetryStrategyFactory;
+import com.cgxdgfcd.rpc.fault.tolerant.TolerantStrategy;
+import com.cgxdgfcd.rpc.fault.tolerant.TolerantStrategyFactory;
 import com.cgxdgfcd.rpc.loadbalancer.LoadBalancer;
 import com.cgxdgfcd.rpc.loadbalancer.LoadBalancerFactory;
 import com.cgxdgfcd.rpc.model.RpcRequest;
@@ -78,15 +80,25 @@ public class ServiceProxy implements InvocationHandler {
 //            System.out.println(selectedServiceMetaInfo.getServiceAddress());
 
             // 使用重试机制
-            RetryStrategy retryStrategy = RetryStrategyFactory.getInstance(RpcApplication.getRpcConfig().getRetryStrategy());
-            RpcResponse rpcResponse = retryStrategy.doRetry(() ->
-                    VertxTcpClient.doRequest(rpcRequest, selectedServiceMetaInfo)
-            );
+            RpcResponse rpcResponse;
+            try {
+                RetryStrategy retryStrategy = RetryStrategyFactory.getInstance(RpcApplication.getRpcConfig().getRetryStrategy());
+                rpcResponse = retryStrategy.doRetry(() ->
+                        VertxTcpClient.doRequest(rpcRequest, selectedServiceMetaInfo)
+                );
+            } catch (Exception e) {
+                // 容错机制
+                HashMap<String, Object> map = new HashMap<>();
+                map.put("serviceList", serviceMetaInfos);
+                map.put("errorService", selectedServiceMetaInfo);
+                map.put("rpcRequest", rpcRequest);
+                TolerantStrategy tolerantStrategy = TolerantStrategyFactory.getInstance(RpcApplication.getRpcConfig().getTolerantStrategy());
+                rpcResponse = tolerantStrategy.doTolerant(map, e);
+            }
+
             return rpcResponse.getData();
         } catch (Exception e) {
             throw new RuntimeException("调用失败, " + e);
         }
-
-
     }
 }

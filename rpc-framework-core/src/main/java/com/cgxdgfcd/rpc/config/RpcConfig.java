@@ -1,6 +1,8 @@
 package com.cgxdgfcd.rpc.config;
 
 import com.cgxdgfcd.rpc.fault.retry.RetryStrategyKeys;
+import com.cgxdgfcd.rpc.fault.tolerant.MockServiceKeys;
+import com.cgxdgfcd.rpc.fault.tolerant.TolerantStrategyKeys;
 import com.cgxdgfcd.rpc.loadbalancer.LoadBalancer;
 import com.cgxdgfcd.rpc.loadbalancer.LoadBalancerKeys;
 import com.cgxdgfcd.rpc.loadbalancer.RoundRobinLoadBalancer;
@@ -58,4 +60,14 @@ public class RpcConfig {
      * 重试策略
      */
     private String retryStrategy = RetryStrategyKeys.NO;
+
+    /**
+     * 服务降级（模拟服务）
+     */
+    private String mockService = MockServiceKeys.DEFAULT_MOCK;
+
+    /**
+     * 容错策略
+     */
+    private String tolerantStrategy = TolerantStrategyKeys.FAIL_FAST;
 }
