@@ -1,5 +1,6 @@
 package com.cgxdgfcd.rpc.registry;
 
+import com.alibaba.nacos.api.exception.NacosException;
 import com.cgxdgfcd.rpc.config.RegistryConfig;
 import com.cgxdgfcd.rpc.model.ServiceMetaInfo;
 
@@ -55,7 +56,7 @@ public interface Registry {
      *
      * @param serviceNodeKey
      */
-    void watch(String serviceNodeKey);
+    void watch(String serviceNodeKey) throws NacosException;
 
     /**
      * 清理指定 serviceKey 的缓存

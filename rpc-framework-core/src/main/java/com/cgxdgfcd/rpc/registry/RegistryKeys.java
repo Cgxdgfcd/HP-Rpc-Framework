@@ -8,4 +8,6 @@ public interface RegistryKeys {
     String ETCD = "etcd";
 
     String ZOOKEEPER = "zookeeper";
+
+    String NACOS = "nacos";
 }
